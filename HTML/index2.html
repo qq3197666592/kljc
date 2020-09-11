@@ -1,0 +1,264 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+        <link href="https://fonts.font.im/css?family=Noto+Sans|Open+Sans" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/8a45a17ae5.js" crossorigin="anonymous"></script>
+        <meta charset="UTF-8">
+        
+        <title>upload</title>
+        <style type="text/css">
+            .float{
+                float:left;
+                width : 200px;
+                height: 200px;
+                overflow: hidden;
+                border: 1px solid #CCCCCC;
+                border-radius: 10px;
+                padding: 5px;
+                margin-left: 75px;
+            }
+            img{
+                position: relative;
+            }
+            .result{
+                width: 200px;
+                height: 200px;
+                text-align: center;
+                box-sizing: border-box;
+            }
+         
+         
+            #file_input{
+                display: none;
+            }
+         
+         
+            .delete{
+                width: 200px;
+                height:200px;
+                position: absolute;
+                text-align: center;
+                line-height: 200px;
+                z-index: 10;
+                font-size: 30px;
+                background-color: rgba(255,255,255,0.8);
+                color: #777;
+                opacity: 0;
+                transition-duration: 0.7s;
+                -webkit-transition-duration: 0.7s;
+            }
+         
+         
+            .delete:hover{
+                cursor: pointer;
+                opacity: 1;
+            }
+            .name{
+                margin-top: 10px;
+            }
+            #select{
+                border-radius: 5px;
+            }
+            #add{
+                border-radius: 5px;
+            }
+            #submit{
+                border-radius: 5px;
+            }
+            #first .container{
+                background-color:lightgray;
+                border-radius: 20px;
+                padding-top: 10px;
+                padding-bottom: 2px;
+            }
+            .suggest {
+                margin-top: 5px;
+            }
+            #btn{
+                margin-top: 5px;
+                margin-bottom: 10px;
+                border-radius: 10px;
+                padding: 2px 13px;
+            }
+            #btn:hover{
+                transition: 0.3s;
+                background-color: silver;
+                box-shadow: 2px 2px 2px rgba(0,0,0,0.5)
+            }
+            textarea{
+                resize: none;
+                
+            }
+            .upload input{
+                margin-top: 5px;
+            }
+            h1,h2,h3,h4,h5,h6 {
+                font-family: 'Noto Sans', sans-serif;
+            }       
+            p,a,input,label,textarea,span,ul,li {
+                font-family: 'Open Sans', sans-serif;
+            }
+            #add{
+                margin-left: 5.5px;
+            }
+        </style>
+        <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+        <script type="text/javascript">
+            window.onload = function(){
+                var input = document.getElementById("file_input");
+                var result;
+                var dataArr = [];
+                var fd;
+                var oSelect = document.getElementById("select");
+                var oAdd = document.getElementById("add");
+                
+                var oInput = document.getElementById("file_input");
+            
+                if(typeof FileReader==='undefined'){
+                    alert("抱歉，你的瀏覽器不支持 FileReader");
+                    input.setAttribute('disabled','disabled');
+                }else{
+                    input.addEventListener('change',readFile,false);
+                }　
+            
+ 
+    function readFile(){
+        fd = new FormData();
+        var iLen = this.files.length;
+        for(var i=0;i<iLen;i++){
+            if (!input['value'].match(/.jpg|.gif|.png|.jpeg|.bmp/i)){　
+                return alert("上傳的圖片格式不正確，請重新選擇");
+            }
+            var reader = new FileReader();
+            fd.append(i,this.files[i]);
+            reader.readAsDataURL(this.files[i]); 
+            reader.fileName = this.files[i].name;
+ 
+            reader.onload = function(e){
+                var imgMsg = {
+                    name : this.fileName,
+                    base64 : this.result
+				}
+                dataArr.push(imgMsg);
+                result = '<div class="delete">delete</div><div class="result"><img class="subPic" src="'+this.result+'" alt="'+this.fileName+'"/></div>';
+                var div = document.createElement('div');
+                div.innerHTML = result;
+                div['className'] = 'float';
+                document.getElementsByTagName('body')[0].appendChild(div);
+                var img = div.getElementsByTagName('img')[0];
+                img.onload = function(){
+                    var nowHeight = ReSizePic(this);
+                    this.parentNode.style.display = 'block';
+                    var oParent = this.parentNode;
+                    if(nowHeight){
+                        oParent.style.paddingTop = (oParent.offsetHeight - nowHeight)/2 + 'px';
+                    }
+                }
+                div.onclick = function(){
+                    $(this).remove();
+                }
+            }
+        }
+    }
+    function send(){
+        var submitArr = [];
+        $('.subPic').each(function () {
+                submitArr.push({
+                    name: $(this).attr('alt'),
+                    base64: $(this).attr('src')
+                });
+            }
+        );
+        $.ajax({
+            url : 'http://123.206.89.242:9999',
+            type : 'post',
+            data : JSON.stringify(submitArr),
+            dataType: 'json',
+            success : function(data){
+                console.log('返回的數據：'+JSON.stringify(data))
+          　}
+        })
+    }
+    oSelect.onclick=function(){
+        oInput.value = "";
+        $('.float').remove();
+        oInput.click();
+    } 
+    oAdd.onclick=function(){
+        oInput.value = "";
+        oInput.click();
+    }
+}
+function ReSizePic(ThisPic) {
+    var RePicWidth = 200;
+ 
+    var TrueWidth = ThisPic.width;
+    var TrueHeight = ThisPic.height; 
+ 
+    if(TrueWidth>TrueHeight){
+        var reWidth = RePicWidth;
+        ThisPic.width = reWidth;
+        var nowHeight = TrueHeight * (reWidth/TrueWidth);
+        return nowHeight; 
+    }else{
+        var reHeight = RePicWidth;
+        ThisPic.height = reHeight;
+    }
+}
+ </script>
+ <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+ <script>
+ navigator.geolocation.getCurrentPosition(geoSuccess);
+ function geoSuccess(position)
+ {
+     var geocoder = new google.maps.Geocoder();
+     var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+     var myOptions = {zoom:10,center:latlng, mapTyperId:google.maps.MapTypeId.ROADMAP};
+     var map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+     var marker = new google.maps.Marker({map:map, position:latlng});
+     document.getElementById("msg").innerHTML = "緯度:" + position.coords.latitude + "\t經度:" + position.coords.longitude;
+     }
+ </script>
+    </head>
+    <body background="bg.png">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color: white;">
+                <a class="navbar-brand" href="index.html"><h2>主頁</h2></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+            
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index2.html">上傳</a>
+                    </li>
+                </ul>
+                </div>
+            </nav>
+        </div>
+        <section id="first">
+            <div class="container">
+                <div class="col-md-12">
+                    <h1>上傳店鋪資料</h1>
+                    <label>請選擇圖片：</label>
+
+                    
+                    <form class="upload" action="mailto:asdasd041214@gmail.com" method="post" enctype="multipart/form-data">
+                        <button id="select">增加圖片</button><br/><br/>
+                    <input type="file" id="file_input" multiple/>
+                        <input type="text" class="name" name="name" placeholder="該店鋪的名稱" required maxlength="30" style="margin-top: -10px;"><br/>
+                        <textarea cols=60 rows=6 class="suggest" name="suggest" placeholder="你對該店鋪的建議" required maxlength="500"></textarea><br/>           
+                        <button id="btn" class="btn1" >上傳</button>
+                      
+                    </form>
+                        <div id="map_canvas" style="width: 500px; height: 500px;margin-bottom: 15px;"></div>
+                </div>
+            </div>
+        </section>
+    </body>
+</html>
